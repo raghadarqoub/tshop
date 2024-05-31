@@ -1,6 +1,7 @@
 import userModel from './../../../DB/model/user.model.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { sendEmail } from '../../utls/email.js';
 export const register=async (req, res) => {
     const {userName, email, password} = req.body;
     const user =await userModel.findOne({email});

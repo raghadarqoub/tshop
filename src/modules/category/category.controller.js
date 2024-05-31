@@ -11,7 +11,6 @@ export const create =async (req, res) => {
                 {
                     folder:'tshop5/categories'
                 });
-                // cloudinary.uploader.destroy(category.image.public_id);
                 req.body.image ={secure_url ,public_id};
         
             req.body.createdBy=req.user._id;
@@ -42,7 +41,7 @@ export const update= async (req, res) => {
     category.slug = slugify(req.body.name);
     if(req.file){  
     const {secure_url ,public_id}=await cloudinary.uploader.upload(req.file.path,{
-        folder:'tshop5/categories'
+        folder:`${APPNAME}/categories`
     });
     cloudinary.uploader.destroy(category.image.public_id);
     category.image={secure_url,public_id};

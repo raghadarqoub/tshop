@@ -1,7 +1,7 @@
 import userModel from "../../DB/model/user.model.js";
 import jwt from 'jsonwebtoken';
 
-export const auth = () => {
+export const auth = (accessRole=[]) => {
     return async (req, res, next) => {
         const { authorization } = req.headers;
         if (!authorization?.startsWith(process.env.BEARERTOKEN)){
@@ -19,5 +19,4 @@ export const auth = () => {
         req.user = user;
         next();
     }
-
 }
