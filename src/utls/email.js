@@ -8,7 +8,7 @@ export async function sendEmail(to, subject, html) {
         }
     });
     const info =await transporter.sendMail({
-        from :`T shop <${process.env.EMAILSENDER}>`, // sender address
+        from :`T shop" <${process.env.EMAILSENDER}>`, // sender address
         to, // list of receivers
         subject, // Subject line
         html, // html body 

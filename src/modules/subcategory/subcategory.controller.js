@@ -14,7 +14,8 @@ export const create =async (req, res) => {
         return res.status(409).json({ message: "category already exist" });
         }
         req.body.slug =slugify(req.body.name);
-            const {secure_url ,public_id}=await cloudinary.uploader.upload(req.file.path,
+            const {secure_url ,public_id}= await cloudinary.uploader.upload(
+                req.file.path,
                 {
                     folder:`${process.env.APPNAME}/subcategories`
                 });
