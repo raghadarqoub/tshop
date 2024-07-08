@@ -1,3 +1,4 @@
+import productModel from '../../../DB/model/prouduct.model.js';
 import categoryModel from './../../../DB/model/category.model.js';
 import subcategoryModel from './../../../DB/model/subcategory.model.js';
 import cloudinary from './../../utls/cloudinary.js';
@@ -27,3 +28,34 @@ export const create= async (req, res) => {
     const product =await productModel.create (req.body);
     return res.status(201).json({message:"success",product});
 }
+
+export const getProducts= async (req, res) => {
+    const {skip,limit }= pagination(req.query.page ,req.query.limit);
+    let queryobj= {...req.query};//debCopy
+    const execQuery=['page','limit','sort','fields','search'];
+    execQuery.map((ele)=>{
+        delete queryobj[ele];
+    });// hon bser shallowCopy
+    queryobj=JSON.stringify(queryobj);
+    queryobj=queryobj.replace(/gt|gte|lt|lte|in|nin|eq/g,match=>`$${match}`);
+    queryobj=JSON.parse(queryobj);
+    const mongooseQuery=productModel.find(queryobj).skip(skip).limit(limit).populate({
+    path:"reviews",
+    populate:{
+        path:"userId"
+    },
+});
+if(req.query.search){
+    mongooseQuery.find({
+        $or:[
+            {name:{$regex:req.query.search}},
+            {description:{$regex:req.query.search}}
+        ]
+    });
+}
+const count= await productModel.estimatedDocumentCount();
+mongooseQuery.select(req.query.fields);
+// m3 - tnazly bdon - tsh3dy fe al sort
+    const products=await mongooseQuery.sort(req.query.sort);
+    return res.json({message:"success",count,products});
+}  

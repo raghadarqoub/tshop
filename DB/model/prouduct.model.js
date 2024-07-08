@@ -60,7 +60,16 @@ const productSchema = new Schema({
     updatedBy:{type:Types.ObjectId,ref:'User'},
     },{
         timestamps:true,
+        toJSON:{virtuals:true},
+        toObject:{virtuals:true},
     });
+productSchema.virtual('reviews', {
+    ref: 'Review',
+    localField: '_id',
+    foreignField: 'productId',
+    justOne: false,
+});
+
 
 const productModel=model('Product',productSchema);
 export default  productModel;
