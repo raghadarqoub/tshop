@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { sendEmail } from '../../utls/email.js';
 import { customAlphabet, nanoid } from 'nanoid';
-import Joi from 'joi';
+import xlsx from "xlsx";
 export const register= async (req, res) => {
     const {userName, email, password} = req.body;
     const hashedPassword = bcrypt.hashSync(password,parseInt(process.env.SALTROUND));
@@ -12,6 +12,13 @@ export const register= async (req, res) => {
     await sendEmail(email, `welcome`,userName,token);
     return res.status(201).json({ message:"success" , user: createUser});
 };
+export const addUserExcel = async (req, res) => {
+    const webhook=xlsx.readFile(req.file.path);
+    const worksheet=webhook.Sheets[webhook.SheetNames[0]];
+    const users=xlsx.utils.sheet_to_json(worksheet);
+    await userModel.insertMany(users);
+    return res.json(req.file);
+}
 export const confirmEmail = async (req, res) => {
 const token = req.params.token;
 const decoded=jwt.verify(token,process.env.CONFIRM_EMAILTOKEN);

@@ -1,10 +1,9 @@
-// import { pipeline } from 'nodemailer/lib/xoauth2/index.js';
 import couponModel from '../../../DB/model/coupon.model.js';
 import cartModel from './../../../DB/model/cart.model.js';
 import productModel from './../../../DB/model/prouduct.model.js';
-// import productModel from '../../../DB/model/prouduct.model.js';
 import orderModel from './../../../DB/model/order.model.js';
-// import productModel from './../../../DB/model/prouduct.model.js';
+import createInvoice from './../../utls/pdf.js';
+
 import Stripe from 'stripe';
 const stripe = new Stripe('sk_test_51P70rq09ytaQUOywcS9L6a3wXe2zxx5BJKBDc8EKCUl8dfD1KtCBcqs32Xo05LVAFCvuu2Hz8X7rwinONFDXbyRk000TaWGZ0c');
 export const createOrder = async (req, res) => {
@@ -53,6 +52,7 @@ if(!req.user.address){
 if(!req.user.phone){
   req.user.phone=user.phone;
 }
+/*
 const session = await stripe.checkout.sessions.create({
 line_items: [{
   price_data:{
@@ -68,6 +68,8 @@ mode:'payment',
 success_url: `https://facebook.com`,
 cancel_url: `https://youtube.com`,
 })
+return res.json({message:"success",session});
+*/
 const order =await orderModel.create({
 userId:req.user._id,
 products:finalProductList,
@@ -77,6 +79,20 @@ phone:body.phone,
 updateBy:req.user._id
 });
 if(order){
+const invoice = {
+  shipping: {
+    name: user.name,
+    address: order.address,
+    phone: order.phone,
+
+  },
+  items:order.products,
+  subtotal: order.finalPrice,
+  invoice_nr: order._id,
+
+};
+
+createInvoice(invoice, "invoice.pdf");
   for (const product of req.body.products) {
   await productModel.findOneAndUpdate({_id:product.productId},
     {
