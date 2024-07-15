@@ -3,6 +3,7 @@ import subcategoryModel from '../../../DB/model/subcategory.model.js';
 import cloudinary from '../../utls/cloudinary.js';
 import slugify from 'slugify';
 // import subcategoryModel from './../../../DB/model/subcategory.model.js';
+
 export const create =async (req, res) => {
     const {CategoryId} = req.body;
     const category = await categoryModel.findById(CategoryId);
@@ -26,7 +27,7 @@ export const create =async (req, res) => {
             return res.json({ message:"success" , subcategory });
 }
 export const getAll = async (req, res) => {
-    const {id} = req.params;
+    // const {id} = req.params;
     // return res.json(id);
     const subcategories = await subcategoryModel.find({});
     return res.status(200).json({message:"success" ,subcategories});
@@ -66,5 +67,5 @@ export const destory = async (req, res) => {
         return res.status(404).json({ message: "category not found" });
     }
     await cloudinary.uploader.destroy(category.image.public_id);
-    return res.status(200).json({message:"success", category});
+    return res.status(200).json({message:"category deleted successfully", category});
 }

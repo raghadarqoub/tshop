@@ -3,8 +3,8 @@ const userSchema = new Schema({
     userName: { 
         type:String,
         required: true,
-        min:4,
-        max:20,
+        minlength:4,
+        maxlength:20,
     },
     email: {
         type: String,
@@ -13,6 +13,10 @@ const userSchema = new Schema({
     password:{
         type: String,
         required: true
+    },
+    isDelete: {
+        type: Boolean,
+        default: false,
     },
     image:{
         type: Object,

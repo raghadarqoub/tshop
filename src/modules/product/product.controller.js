@@ -1,15 +1,17 @@
-import productModel from '../../../DB/model/prouduct.model.js';
+import slugify from 'slugify';
 import categoryModel from './../../../DB/model/category.model.js';
 import subcategoryModel from './../../../DB/model/subcategory.model.js';
 import cloudinary from './../../utls/cloudinary.js';
-import slugify from 'slugify';
+import productModel from '../../../DB/model/prouduct.model.js';
+import { pagination } from '../../utls/pagination.js';
+import { query } from 'express';
 export const create= async (req, res) => {
-    const {name ,price, discount,categoryId,subCategoryId}=req.body;
-    const checkCategory=await categoryModel.findById(categoryId);
+        const {name ,price, discount,CategoryId,subCategoryId}=req.body;
+    const checkCategory=await categoryModel.findById(CategoryId);
     if(!checkCategory){
         return res.status(404).json({message:"category not found"});
     } 
-    const checkSubCategory=await subcategoryModel.findOne({_id:subCategoryId,categoryId:categoryId});
+    const checkSubCategory=await subcategoryModel.findOne({_id:subCategoryId,CategoryId:CategoryId});
     if(!checkSubCategory){
         return res.status(404).json({message:"sub category not found"});
     }
@@ -20,10 +22,12 @@ export const create= async (req, res) => {
         {folder:`${process.env.APPNAME}/products/${name}`});
         req.body.mainImage= {secure_url,public_id};
         req.body.subImges=[];
-        for(const file of req.files.subImages){
-            const {secure_url ,public_id} = await cloudinary.uploader.upload(file.path,
-                {folder:`${process.env.APPNAME}/products/${name}/subImages`});
-                req.body.subImages.push({secure_url,public_id});
+        if(req.files.subImges){
+            for(const file of req.files.subImages){
+                const {secure_url ,public_id} = await cloudinary.uploader.upload(file.path,
+                    {folder:`${process.env.APPNAME}/products/${name}/subImages`});
+                    req.body.subImages.push({secure_url,public_id});
+        }
 }
     const product =await productModel.create (req.body);
     return res.status(201).json({message:"success",product});
@@ -57,5 +61,13 @@ const count= await productModel.estimatedDocumentCount();
 mongooseQuery.select(req.query.fields);
 // m3 - tnazly bdon - tsh3dy fe al sort
     const products=await mongooseQuery.sort(req.query.sort);
+
+    products=products.map(product =>{
+        return {
+            ...products.toObject(),
+            mainImage: product.mainImage.secure_url,
+            subImages: product.subImages.map(img => img.secure_url),
+        } 
+    })
     return res.json({message:"success",count,products});
 }  

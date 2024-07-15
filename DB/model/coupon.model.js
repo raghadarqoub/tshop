@@ -2,9 +2,9 @@ import mongoose, { Schema, model, Types } from "mongoose";
 const couponSchema = new Schema(
     {
     name: {
-        type: Types.ObjectId,
-        ref: "User",
+        type:String,
         required: true,
+        unique: true,
     },
 
     amount: { 
@@ -12,15 +12,18 @@ const couponSchema = new Schema(
         required: true  
     },
 
-    usedBy: [
+    usedBy:[
         {
         type: Types.ObjectId,
         ref: "User",
         required: true,
         },
     ],
-    expireDate: { type: Date, required: true },
-    updateBy: { type: Types.ObjectId, ref: "User", required: true },
+    expireDate: { 
+        type: Date, 
+        required: true 
+    },
+    // updateBy: { type: Types.ObjectId, ref: "User", required: true },
     },
     {
     timestamps: true,

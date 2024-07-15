@@ -18,10 +18,8 @@ const categorySchema = new Schema({
         default:'Active',
         enum:['Active','NotActive'],
     },
-    createdBy:{
-        type:Types.ObjectId,ref:'User' , required:true},
-    updatedBy:{
-        type:Types.ObjectId,ref:'User', required:true},
+    createdBy:{type:Types.ObjectId,ref:'User'},
+    updatedBy:{type:Types.ObjectId,ref:'User'},
 },
 {
     timestamps:true,
@@ -30,7 +28,7 @@ const categorySchema = new Schema({
 });
 categorySchema.virtual("subcategory",{
     localField:'_id',
-    foreignField:' CategoryId',
+    foreignField:'CategoryId',
     ref:'SubCategory',
     
 })

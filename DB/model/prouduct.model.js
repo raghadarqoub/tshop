@@ -46,7 +46,7 @@ const productSchema = new Schema({
         enum:['s','m','l','xl','xxl'],
     }],
     color:[String],
-    categoryId :{
+    CategoryId :{
         type:Types.ObjectId,
         ref:'Category',
         required:true,

@@ -5,6 +5,8 @@ import productModel from './../../../DB/model/prouduct.model.js';
 // import productModel from '../../../DB/model/prouduct.model.js';
 import orderModel from './../../../DB/model/order.model.js';
 // import productModel from './../../../DB/model/prouduct.model.js';
+import Stripe from 'stripe';
+const stripe = new Stripe('sk_test_51P70rq09ytaQUOywcS9L6a3wXe2zxx5BJKBDc8EKCUl8dfD1KtCBcqs32Xo05LVAFCvuu2Hz8X7rwinONFDXbyRk000TaWGZ0c');
 export const createOrder = async (req, res) => {
   const { couponName } = req.body;
 const cart = await cartModel.findOne({userId:req.user._id});
@@ -51,6 +53,21 @@ if(!req.user.address){
 if(!req.user.phone){
   req.user.phone=user.phone;
 }
+const session = await stripe.checkout.sessions.create({
+line_items: [{
+  price_data:{
+    currency:'usd',
+    unit_amount:subTotal - (subTotal * (req.body.coupon?.amount || 0)) / 100,
+    product_data:{
+      name: user.name,
+    },
+  },
+  quantity:1,
+}],
+mode:'payment',
+success_url: `https://facebook.com`,
+cancel_url: `https://youtube.com`,
+})
 const order =await orderModel.create({
 userId:req.user._id,
 products:finalProductList,
