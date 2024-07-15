@@ -5,13 +5,9 @@ import { sendEmail } from '../../utls/email.js';
 import { customAlphabet, nanoid } from 'nanoid';
 export const register=async (req, res) => {
     const {userName, email, password} = req.body;
-    const user =await userModel.findOne({email});
-    if(user){
-        return res.status(409).json({ message: "email already exist" });
-    }
     const hashedPassword = bcrypt.hashSync(password,parseInt(process.env.SALTROUND));
     const createUser = await userModel.create({userName, email, password:hashedPassword});
-    await sendEmail(email, `welcome`,`<h2>hello ya ${userName}</h2>`);
+    await sendEmail(email, `welcome`,userName);
     return res.status(201).json({ message:"success" , user: createUser});
 }
 export const login = async (req, res) => {
