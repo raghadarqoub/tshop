@@ -63,13 +63,13 @@ if(req.query.search){
 const count= await productModel.estimatedDocumentCount();
 mongooseQuery.select(req.query.fields);
 // m3 - tnazly bdon - tsh3dy fe al sort
-    const products=await mongooseQuery.sort(req.query.sort);
+    let products=await mongooseQuery.sort(req.query.sort);
 
-    products=products.map(product =>{
+    products = products.map(product=>{
         return {
-            ...products.toObject(),
+            ...product.toObject(),
             image: product.mainImage.secure_url,
-            subImages: product.subImages.map(img => img.secure_url),
+            subImges: product.subImges.map(img => img.secure_url)
         } 
     })
     return res.json({message:"success",count,products});
