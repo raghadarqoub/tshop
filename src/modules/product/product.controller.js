@@ -11,7 +11,10 @@ export const create= async (req, res) => {
     if(!checkCategory){
         return res.status(404).json({message:"category not found"});
     } 
-    const checkSubCategory=await subcategoryModel.findOne({_id:subCategoryId,CategoryId:CategoryId});
+    const checkSubCategory=await subcategoryModel.findById(subCategoryId);
+        // console.log(CategoryId);
+    // console.log(subCategoryId);
+    console.log(checkSubCategory);
     if(!checkSubCategory){
         return res.status(404).json({message:"sub category not found"});
     }
@@ -23,10 +26,10 @@ export const create= async (req, res) => {
         req.body.mainImage= {secure_url,public_id};
         req.body.subImges=[];
         if(req.files.subImges){
-            for(const file of req.files.subImages){
+            for(const file of req.files.subImges){
                 const {secure_url ,public_id} = await cloudinary.uploader.upload(file.path,
                     {folder:`${process.env.APPNAME}/products/${name}/subImages`});
-                    req.body.subImages.push({secure_url,public_id});
+                    req.body.subImges.push({secure_url,public_id});
         }
 }
     const product =await productModel.create (req.body);
@@ -65,7 +68,7 @@ mongooseQuery.select(req.query.fields);
     products=products.map(product =>{
         return {
             ...products.toObject(),
-            mainImage: product.mainImage.secure_url,
+            image: product.mainImage.secure_url,
             subImages: product.subImages.map(img => img.secure_url),
         } 
     })
